@@ -8,15 +8,7 @@ const app = express();
 app.use(express.static(path.join(__dirname, '/client')));
 
 
-const tasks = [    {
-    id: 1, 
-    name: "go home"
-},
-
-{
-    id: 2,
-    name: "and never come back"
-}];
+const tasks = [];
 
 
 const server = app.listen(process.env.PORT || 8000, () => {
@@ -45,6 +37,14 @@ io.on('connection', (socket) => {
             socket.broadcast.emit('removeTask', taskId);
         }
     });
+
+    socket.on('editTask', ({ id, newName }) => {
+        const taskToEdit = tasks.find((task) => task.id === id);
+        if (taskToEdit) {
+          taskToEdit.name = newName;
+          socket.broadcast.emit('editTask', { id, newName });
+        }
+      });
 
 });
 
