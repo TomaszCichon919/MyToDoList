@@ -1,11 +1,13 @@
 const express = require('express');
 const socket = require('socket.io');
 const path = require('path');
+const cors = require('cors');
 
 
 const app = express();
+app.use(cors());
 
-app.use(express.static(path.join(__dirname, '/client')));
+app.use(express.static(path.join(__dirname, '/client/build')));
 
 
 const tasks = [];
@@ -15,6 +17,11 @@ const server = app.listen(process.env.PORT || 8000, () => {
 });
 
 const io = socket(server);
+
+app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, '/client/build/index.html'));
+  });
+  
 
 io.on('connection', (socket) => {
     console.log('New client! Its id – ' + socket.id);
